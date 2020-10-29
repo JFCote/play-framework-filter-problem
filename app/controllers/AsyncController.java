@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 
+import scala.NotImplementedError;
 import scala.concurrent.ExecutionContext;
 import scala.concurrent.duration.Duration;
 import scala.concurrent.ExecutionContextExecutor;
@@ -49,11 +50,11 @@ public class AsyncController extends Controller {
      * a path of <code>/message</code>.
      */
     public CompletionStage<Result> message() {
-        if (1 == 1) {
-            throw new RuntimeException("Whatever");
-        }
-
         return getFutureMessage(1, TimeUnit.SECONDS).thenApplyAsync(Results::ok, exec);
+    }
+
+    public CompletionStage<Result> messageException() {
+        throw new NotImplementedError("Whatever");
     }
 
     private CompletionStage<String> getFutureMessage(long time, TimeUnit timeUnit) {
