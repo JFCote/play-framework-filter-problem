@@ -25,10 +25,12 @@ public class ExampleFilter extends EssentialFilter {
 
     @Override
     public EssentialAction apply(EssentialAction next) {
-        System.out.println("the filter was called!!");
         return EssentialAction.of(request ->
-            next.apply(request).map(result ->
-                 result.withHeader("X-ExampleFilter", "foo"), exec)
+                {
+                    System.out.println("Filter called on " + request.uri());
+                    return next.apply(request).map(result ->
+                            result.withHeader("X-ExampleFilter", "foo"), exec);
+                }
         );
     }
 }

@@ -50,19 +50,29 @@ public class AsyncController extends Controller {
      * a path of <code>/message</code>.
      */
     public CompletionStage<Result> message() {
-        return getFutureMessage(1, TimeUnit.SECONDS).thenApplyAsync(Results::ok, exec);
+        return getFutureMessage().thenApplyAsync(Results::ok, exec);
     }
 
     public CompletionStage<Result> messageException() {
-        throw new NotImplementedError("Whatever");
+        return getFutureMessageWithError().thenApplyAsync(Results::ok, exec);
     }
 
-    private CompletionStage<String> getFutureMessage(long time, TimeUnit timeUnit) {
+    private CompletionStage<String> getFutureMessage() {
         CompletableFuture<String> future = new CompletableFuture<>();
         actorSystem.scheduler().scheduleOnce(
-            Duration.create(time, timeUnit),
-            () -> future.complete("Hi!"),
+            Duration.create(1, TimeUnit.SECONDS),
+            () -> future.complete("Hi! I'm a success message"),
             exec
+        );
+        return future;
+    }
+
+    private CompletionStage<String> getFutureMessageWithError() {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        actorSystem.scheduler().scheduleOnce(
+                Duration.create(1, TimeUnit.SECONDS),
+                () -> future.completeExceptionally(new RuntimeException("Hi! I'm an error message")),
+                exec
         );
         return future;
     }
